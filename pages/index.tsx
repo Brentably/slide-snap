@@ -10,7 +10,7 @@ const calculateSpaceHeight = (height: number, itemHeight: number): number => {
   return itemHeight * limit
 }
 
-const options = "123456789".split("")
+const options = "||||||||||||||||||".split("")
 
 export default function Home() {
   const ref = useRef<HTMLDivElement>(null)
@@ -23,15 +23,19 @@ export default function Home() {
   const spacerWidth = useMemo(() => (containerWidth/2) - (ITEM_WIDTH/2) - ITEM_MARGIN, [containerWidth])
 
   const onScroll: UIEventHandler<HTMLDivElement> = () => {}
+1.225 
 
   return (
     <div className=" min-h-screen flex items-center justify-center w-[120vw]">
-      <div className="overflow-scroll flex max-w-sm bg-slate-300 snap-mandatory snap-x scroll-smooth scrollbar-hide" onScroll={(e) => {}} ref={ref}>
-        <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
+      <div className="overflow-scroll whitespace-nowrap break-keep max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide " onScroll={(e) => {}} ref={ref}>
+        {/* <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div> */}
         {options.map((char, i) => (
           <Option key={i} index={i} content={char} setSelected={setSelected} selected={selected} containerRef={ref} />
         ))}
-        <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
+        {/* <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div> */}
+      </div>
+      <div className="fixed left-1/2 -translate-x-1/2 bg-gray-400 w-[1px] h-20">
+          
       </div>
     </div>
   )
@@ -56,33 +60,36 @@ export function Option({
   selected: number
   containerRef: RefObject<HTMLDivElement>
 }) {
+  const containerWidth = containerRef.current?.clientWidth ?? 384
+  const ITEM_WIDTH = 40 // hardcoded because "w-10"
+  const ITEM_MARGIN = 12 // harcoded because "mx-3"
+  const spacerWidth = useMemo(() => (containerWidth / 2) + ITEM_WIDTH + (ITEM_MARGIN/2), [containerWidth])
+
   const itemRef = useRef<HTMLButtonElement>(null)
-    const { scrollXProgress } = useScroll({
-      container: containerRef,
-      target: itemRef,
-      axis: "x",
-      offset: ["start center", "end center"], // blank of the target meets the blank of the container
-    })
+  const { scrollXProgress } = useScroll({
+    container: containerRef,
+    target: itemRef,
+    axis: "x",
+    offset: ['0 0.5', '0 0', '-1 0.5']
+    // offset: [`0px ${spacerWidth}px`, `52px ${spacerWidth}px`], // blank of the target meets the blank of the container
+  })
 
+  // const scale = useTransform(scrollXProgress, [1, 0.5, 0], [1, 1.25, 1])
 
-  
-
-    // const { scrollX } = useScroll({
-    //   container: containerRef,
-    //   target: itemRef,
-    //   axis: "x",
-    // })
+  // const { scrollX } = useScroll({
+  //   container: containerRef,
+  //   target: itemRef,
+  //   axis: "x",
+  // })
 
   return (
-    
     <motion.button
       onClick={() => setSelected(index)}
-      className={`flex-shrink-0 m-2 mx-3 bg-green-300 h-10 w-10 flex justify-center items-center rounded-full ${
+      className={`flex-shrink-0 m-2 mx-3 bg-green-300 h-10 w-10 justify-center items-center rounded-full ${
         selected == index ? "bg-blue-300" : ""
       }`}
       ref={itemRef}
-      style={{ scale: scrollXProgress}}>
-      
+      style={{ scale: scrollXProgress }}>
       {content}
     </motion.button>
   )
