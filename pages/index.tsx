@@ -2,7 +2,7 @@ import Image from "next/image"
 import { Inter } from "next/font/google"
 import { Dispatch, RefObject, SetStateAction, UIEventHandler, useEffect, useMemo, useState } from "react"
 import { useRef } from "react"
-import { motion, useScroll } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 
 const inter = Inter({ subsets: ["latin"] })
 const calculateSpaceHeight = (height: number, itemHeight: number): number => {
@@ -25,7 +25,7 @@ export default function Home() {
   const onScroll: UIEventHandler<HTMLDivElement> = () => {}
 
   return (
-    <div className=" min-h-screen flex items-center justify-center">
+    <div className=" min-h-screen flex items-center justify-center w-[120vw]">
       <div className="overflow-scroll flex max-w-sm bg-slate-300 snap-mandatory snap-x scroll-smooth scrollbar-hide" onScroll={(e) => {}} ref={ref}>
         <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
         {options.map((char, i) => (
@@ -60,19 +60,30 @@ export function Option({
     const { scrollXProgress } = useScroll({
       container: containerRef,
       target: itemRef,
-      offset: ["end end", "start start"],
+      axis: "x",
+      offset: ["start center", "end center"], // blank of the target meets the blank of the container
     })
 
 
+  
+
+    // const { scrollX } = useScroll({
+    //   container: containerRef,
+    //   target: itemRef,
+    //   axis: "x",
+    // })
+
   return (
     
-    <button
+    <motion.button
       onClick={() => setSelected(index)}
-      className={`flex-shrink-0 m-2 mx-3 bg-green-300 h-10 w-10 flex justify-center items-center rounded-full snap-center ${
+      className={`flex-shrink-0 m-2 mx-3 bg-green-300 h-10 w-10 flex justify-center items-center rounded-full ${
         selected == index ? "bg-blue-300" : ""
       }`}
-      ref={itemRef}>
+      ref={itemRef}
+      style={{ scale: scrollXProgress}}>
+      
       {content}
-    </button>
+    </motion.button>
   )
 }
