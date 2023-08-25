@@ -26,7 +26,7 @@ export default function Home() {
 
   return (
     <div className=" min-h-screen flex items-center justify-center">
-      <div className="overflow-scroll flex max-w-sm bg-slate-300 snap-mandatory snap-x scroll-smooth" onScroll={(e) => {}} ref={ref}>
+      <div className="overflow-scroll flex max-w-sm bg-slate-300 snap-mandatory snap-x scroll-smooth scrollbar-hide" onScroll={(e) => {}} ref={ref}>
         <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
         {options.map((char, i) => (
           <Option key={i} index={i} content={char} setSelected={setSelected} selected={selected} containerRef={ref} />
@@ -57,6 +57,12 @@ export function Option({
   containerRef: RefObject<HTMLDivElement>
 }) {
   const itemRef = useRef<HTMLButtonElement>(null)
+    const { scrollXProgress } = useScroll({
+      container: containerRef,
+      target: itemRef,
+      offset: ["end end", "start start"],
+    })
+
 
   return (
     
