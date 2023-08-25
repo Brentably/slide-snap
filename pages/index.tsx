@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { Inter } from "next/font/google"
-import { Dispatch, SetStateAction, useMemo, useState } from "react"
+import { Dispatch, RefObject, SetStateAction, UIEventHandler, useEffect, useMemo, useState } from "react"
 import { useRef } from "react"
 import { motion, useScroll } from "framer-motion"
 
@@ -10,11 +10,10 @@ const calculateSpaceHeight = (height: number, itemHeight: number): number => {
   return itemHeight * limit
 }
 
-const options = "123456".split("")
+const options = "123456789".split("")
 
 export default function Home() {
   const ref = useRef<HTMLDivElement>(null)
-  const { scrollXProgress } = useScroll({ container: ref })
   const [selected, setSelected] = useState(-1)
 
   const containerWidth = ref.current?.clientWidth ?? 384
@@ -23,12 +22,14 @@ export default function Home() {
 
   const spacerWidth = useMemo(() => (containerWidth/2) - (ITEM_WIDTH/2) - ITEM_MARGIN, [containerWidth])
 
+  const onScroll: UIEventHandler<HTMLDivElement> = () => {}
+
   return (
     <div className=" min-h-screen flex items-center justify-center">
-      <div className="overflow-scroll flex max-w-sm bg-slate-300" ref={ref}>
+      <div className="overflow-scroll flex max-w-sm bg-slate-300 snap-mandatory snap-x scroll-smooth" onScroll={(e) => {}} ref={ref}>
         <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
         {options.map((char, i) => (
-          <Option key={i} index={i} content={char} setSelected={setSelected} selected={selected} />
+          <Option key={i} index={i} content={char} setSelected={setSelected} selected={selected} containerRef={ref} />
         ))}
         <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
       </div>
@@ -47,18 +48,24 @@ export function Option({
   content,
   setSelected,
   selected,
+  containerRef,
 }: {
   index: number
   content: string
   setSelected: Dispatch<SetStateAction<number>>
   selected: number
+  containerRef: RefObject<HTMLDivElement>
 }) {
+  const itemRef = useRef<HTMLButtonElement>(null)
+
   return (
+    
     <button
       onClick={() => setSelected(index)}
-      className={`flex-shrink-0 m-2 mx-3 bg-green-300 h-10 w-10 flex justify-center items-center rounded-full ${
+      className={`flex-shrink-0 m-2 mx-3 bg-green-300 h-10 w-10 flex justify-center items-center rounded-full snap-center ${
         selected == index ? "bg-blue-300" : ""
-      }`}>
+      }`}
+      ref={itemRef}>
       {content}
     </button>
   )
