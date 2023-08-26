@@ -58,11 +58,13 @@ export default function Home() {
 
       container.scrollTo({left: snappiest.scrollOffset, top: 0, behavior: "smooth"})
     }
-    containerRef.current?.addEventListener("scrollend", scrollEndSnap)
-    containerRef.current?.addEventListener("touchend", scrollEndSnap)
+    // containerRef.current?.addEventListener("scrollend", scrollEndSnap)
+    // containerRef.current?.addEventListener("touchend", scrollEndSnap)
     return () => {
-      containerRef.current?.removeEventListener("touchend", scrollEndSnap)
-      containerRef.current?.removeEventListener("scrollend", scrollEndSnap)}
+      console.log('e')
+      // containerRef.current?.removeEventListener("touchend", scrollEndSnap)
+      // containerRef.current?.removeEventListener("scrollend", scrollEndSnap)
+    }
   }, [containerRef.current])
 
   const snapToNumber = useCallback((offset: number) => {
@@ -70,7 +72,7 @@ export default function Home() {
   }, [containerRef.current])
 
   return (
-    <div className=" min-h-screen flex items-center justify-center">
+    <div className=" min-h-screen flex items-center justify-center translate-y-1/3">
       <motion.div
         layoutScroll
         style={{ overflow: "scroll" }}
@@ -156,7 +158,7 @@ export function Option({
         setSelected(index)
         snapOffsetFunction()
       }}
-      className={`flex-shrink-0 flex m-2 h-10 w-10 justify-center items-center rounded-full ${
+      className={`flex-shrink-0 flex m-2 h-10 w-10 justify-center items-center rounded-full snap-center ${
         selected == index ? "" : ""
       }`}
       ref={itemRef}
