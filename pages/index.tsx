@@ -80,7 +80,7 @@ export function Option({
     
     setContent1(latest.toFixed(2))
   })
-    // const scale = useTransform(scrollXProgress, [1, 0.5, 0], [1, 1.25, 1])
+    const scale = useTransform(scrollXProgress, [1, 0.5, 0], [1, 1.25, 1])
 
   // const { scrollX } = useScroll({
   //   container: containerRef,
@@ -95,7 +95,7 @@ export function Option({
         selected == index ? "bg-blue-300" : ""
       }`}
       ref={itemRef}
-      // style={{ scale: scrollXProgress }}
+      style={{ scale: scale }}
       >
       {content1}
     </motion.div>
