@@ -22,7 +22,7 @@ export default function Home() {
   useEffect(() => setContainerWidth(containerRef.current?.clientWidth ?? 384), [containerRef.current])
 
   const ITEM_WIDTH = 40 // hardcoded because "w-10"
-  const ITEM_MARGIN = 12 // harcoded because "mx-3"
+  const ITEM_MARGIN = 8 // harcoded because "mx-3"
 
   const spacerWidth = useMemo(() => ((containerWidth / 2) - (ITEM_WIDTH / 2) - ITEM_MARGIN), [containerWidth])
 
@@ -59,7 +59,10 @@ export default function Home() {
       container.scrollTo({left: snappiest.scrollOffset, top: 0, behavior: "smooth"})
     }
     containerRef.current?.addEventListener("scrollend", scrollEndSnap)
-    return () => containerRef.current?.removeEventListener("scrollend", scrollEndSnap)
+    containerRef.current?.addEventListener("touchend", scrollEndSnap)
+    return () => {
+      containerRef.current?.removeEventListener("touchend", scrollEndSnap)
+      containerRef.current?.removeEventListener("scrollend", scrollEndSnap)}
   }, [containerRef.current])
 
   const snapToNumber = useCallback((offset: number) => {
@@ -93,7 +96,7 @@ export default function Home() {
         ))}
         <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
       </motion.div>
-      <div className="fixed left-1/2 -translate-x-1/2 bg-gray-400 w-[1px] h-20"></div>
+      <div className="fixed left-1/2 -translate-x-1/2 bg-gray-400 w-[1px] h-20 invisible"></div>
     </div>
   )
 }
@@ -121,7 +124,7 @@ export function Option({
 }) {
   const containerWidth = containerRef.current?.clientWidth ?? 384
   const ITEM_WIDTH = 40 // hardcoded because "w-10"
-  const ITEM_MARGIN = 12 // harcoded because "mx-3"
+  const ITEM_MARGIN = 8 // harcoded because "mx-3"
   const spacerWidth = useMemo(() => containerWidth / 2 + ITEM_WIDTH + ITEM_MARGIN / 2, [containerWidth])
 
   const itemRef = useRef<HTMLDivElement>(null)
@@ -141,7 +144,11 @@ export function Option({
     setContent1(latest.toFixed(2))
   })
 
-  const scale = useTransform(scrollXProgress, [1, 0.5, 0], [1, 1.25, 1])
+  const scale = useTransform(scrollXProgress, [1, 0.5, 0], [1, 1.05, 1])
+  // const backgroundColor = useTransform(scrollXProgress, [1, 0.5, 0], ["#86efac", "#93c5fd", "#86efac"])
+  const backgroundColor = useTransform(scrollXProgress, [1, 0.5, 0], ["#F2CC6A66", "#F9F5EDF5", "#F2CC6A66"])
+// #86efac
+// #93c5fd
 
   return (
     <motion.div
@@ -149,11 +156,11 @@ export function Option({
         setSelected(index)
         snapOffsetFunction()
       }}
-      className={`flex-shrink-0 flex m-2 mx-3 bg-green-300 h-10 w-10 justify-center items-center rounded-full ${
-        selected == index ? "bg-blue-300" : ""
+      className={`flex-shrink-0 flex m-2 h-10 w-10 justify-center items-center rounded-full ${
+        selected == index ? "" : ""
       }`}
       ref={itemRef}
-      style={{ scale: scale }}>
+      style={{ scale, backgroundColor }}>
       {content}
     </motion.div>
   )
