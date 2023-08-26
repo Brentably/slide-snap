@@ -13,10 +13,10 @@ const calculateSpaceHeight = (height: number, itemHeight: number): number => {
 const options = "||||||||||||||||||".split("")
 
 export default function Home() {
-  const ref = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [selected, setSelected] = useState(-1)
 
-  const containerWidth = ref.current?.clientWidth ?? 384
+  const containerWidth = containerRef.current?.clientWidth ?? 384
   const ITEM_WIDTH = 40 // hardcoded because "w-10"
   const ITEM_MARGIN = 12 // harcoded because "mx-3"
 
@@ -24,15 +24,25 @@ export default function Home() {
 
   const onScroll: UIEventHandler<HTMLDivElement> = () => {}
 
+  useEffect(() => {
+    function scrollEndSnap() {
+      console.log('snap')
+      const container = containerRef.current
+      if(!container) throw new Error()
+
+    }
+    containerRef.current?.addEventListener('scrollend', scrollEndSnap)
+    return () => containerRef.current?.removeEventListener('scrollend', scrollEndSnap)
+  }, [containerRef.current])
 
   return (
     <div className=" min-h-screen flex items-center justify-center">
-      <div className="overflow-scroll relative flex flex-row max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide " onScroll={(e) => {}} ref={ref}>
-        {/* <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div> */}
+      <div className="overflow-scroll relative flex flex-row max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide " onScroll={(e) => {}} ref={containerRef}>
+        <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
         {options.map((char, i) => (
-          <Option key={i} index={i} content={char} setSelected={setSelected} selected={selected} containerRef={ref} />
+          <Option key={i} index={i} content={char} setSelected={setSelected} selected={selected} containerRef={containerRef} />
         ))}
-        {/* <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div> */}
+        <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
       </div>
       <div className="fixed left-1/2 -translate-x-1/2 bg-gray-400 w-[1px] h-20">
           
@@ -67,6 +77,7 @@ export function Option({
 
   const itemRef = useRef<HTMLDivElement>(null)
   const { scrollXProgress } = useScroll({
+    layoutEffect: false,
     container: containerRef,
     target: itemRef,
     axis: "x",
@@ -75,10 +86,15 @@ export function Option({
     // offset: [`0px ${spacerWidth}px`, `52px ${spacerWidth}px`], // blank of the target meets the blank of the container
   })
   const [content1, setContent1] = useState(content)
+  // scrollXProgress.on("change", )
   useMotionValueEvent(scrollXProgress, "change", (latest) => {
-    console.log(index, latest.toFixed(2))
-    
+    // console.log(index, latest.toFixed(2))
+
     setContent1(latest.toFixed(2))
+  })
+
+  useMotionValueEvent(scrollXProgress, 'animationComplete', () => {
+    console.log('animation complete')
   })
     const scale = useTransform(scrollXProgress, [1, 0.5, 0], [1, 1.25, 1])
 
