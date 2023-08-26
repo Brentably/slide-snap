@@ -27,7 +27,7 @@ export default function Home() {
 
   return (
     <div className=" min-h-screen flex items-center justify-center">
-      <div className="overflow-scroll whitespace-nowrap break-keep max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide " onScroll={(e) => {}} ref={ref}>
+      <div className="overflow-scroll relative flex flex-row max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide " onScroll={(e) => {}} ref={ref}>
         {/* <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div> */}
         {options.map((char, i) => (
           <Option key={i} index={i} content={char} setSelected={setSelected} selected={selected} containerRef={ref} />
@@ -70,7 +70,7 @@ export function Option({
     container: containerRef,
     target: itemRef,
     axis: "x",
-    offset: ['center start', 'center end']
+    offset: ['start center', 'end center']
     // offset: ['0 0.5', '-1 0.5']
     // offset: [`0px ${spacerWidth}px`, `52px ${spacerWidth}px`], // blank of the target meets the blank of the container
   })
@@ -91,7 +91,7 @@ export function Option({
   return (
     <motion.div
       onClick={() => setSelected(index)}
-      className={`flex-shrink-0 inline-block m-2 mx-3 bg-green-300 h-10 w-10 justify-center items-center rounded-full ${
+      className={`flex-shrink-0 flex m-2 mx-3 bg-green-300 h-10 w-10 justify-center items-center rounded-full ${
         selected == index ? "bg-blue-300" : ""
       }`}
       ref={itemRef}
