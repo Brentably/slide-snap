@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { Inter } from "next/font/google"
-import { Dispatch, RefObject, SetStateAction, UIEventHandler, useEffect, useMemo, useState } from "react"
+import { Dispatch, RefObject, SetStateAction, UIEventHandler, useCallback, useEffect, useMemo, useState } from "react"
 import { useRef } from "react"
 import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion"
 
@@ -20,7 +20,7 @@ export default function Home() {
   const [containerWidth, setContainerWidth] = useState(384)
 
   useEffect(() => setContainerWidth(containerRef.current?.clientWidth ?? 384), [containerRef.current])
-  
+
   const ITEM_WIDTH = 40 // hardcoded because "w-10"
   const ITEM_MARGIN = 12 // harcoded because "mx-3"
 
@@ -56,21 +56,27 @@ export default function Home() {
         }
       }
 
-      container.scrollTo(snappiest.scrollOffset, 0)
+      container.scrollTo({left: snappiest.scrollOffset, top: 0, behavior: "smooth"})
     }
     containerRef.current?.addEventListener("scrollend", scrollEndSnap)
     return () => containerRef.current?.removeEventListener("scrollend", scrollEndSnap)
   }, [containerRef.current])
 
+  const snapToNumber = useCallback((offset: number) => {
+    containerRef.current?.scrollTo({ left: offset, top: 0, behavior: "smooth" })
+  }, [containerRef.current])
+
   return (
     <div className=" min-h-screen flex items-center justify-center">
       <motion.div
+        layoutScroll
+        style={{ overflow: "scroll" }}
         transition={{
           type: "spring",
           damping: 10,
           stiffness: 100,
         }}
-        className="overflow-scroll relative flex flex-row max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide"
+        className="relative flex flex-row max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide"
         onScroll={(e) => {}}
         ref={containerRef}>
         <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
@@ -82,7 +88,7 @@ export default function Home() {
             setSelected={setSelected}
             selected={selected}
             containerRef={containerRef}
-            snapOffset={snapXOffsets[i]}
+            snapOffsetFunction={() => snapToNumber(snapXOffsets[i])}
           />
         ))}
         <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div>
@@ -104,14 +110,14 @@ export function Option({
   setSelected,
   selected,
   containerRef,
-  snapOffset,
+  snapOffsetFunction,
 }: {
   index: number
   content: string
   setSelected: Dispatch<SetStateAction<number>>
   selected: number
   containerRef: RefObject<HTMLDivElement>
-  snapOffset: number
+  snapOffsetFunction: () => void
 }) {
   const containerWidth = containerRef.current?.clientWidth ?? 384
   const ITEM_WIDTH = 40 // hardcoded because "w-10"
@@ -141,7 +147,7 @@ export function Option({
     <motion.div
       onClick={() => {
         setSelected(index)
-        containerRef.current?.scrollTo(snapOffset, 0)
+        snapOffsetFunction()
       }}
       className={`flex-shrink-0 flex m-2 mx-3 bg-green-300 h-10 w-10 justify-center items-center rounded-full ${
         selected == index ? "bg-blue-300" : ""
