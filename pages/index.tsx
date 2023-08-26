@@ -77,9 +77,8 @@ export default function Home() {
         layoutScroll
         style={{ overflow: "scroll" }}
         transition={{
-          type: "spring",
-          damping: 10,
-          stiffness: 100,
+          ease: "linear",
+          duration: 10,
         }}
         className="relative flex flex-row max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide"
         onScroll={(e) => {}}
