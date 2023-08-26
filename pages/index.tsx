@@ -2,7 +2,7 @@ import Image from "next/image"
 import { Inter } from "next/font/google"
 import { Dispatch, RefObject, SetStateAction, UIEventHandler, useEffect, useMemo, useState } from "react"
 import { useRef } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion"
 
 const inter = Inter({ subsets: ["latin"] })
 const calculateSpaceHeight = (height: number, itemHeight: number): number => {
@@ -23,10 +23,10 @@ export default function Home() {
   const spacerWidth = useMemo(() => (containerWidth/2) - (ITEM_WIDTH/2) - ITEM_MARGIN, [containerWidth])
 
   const onScroll: UIEventHandler<HTMLDivElement> = () => {}
-1.225 
+
 
   return (
-    <div className=" min-h-screen flex items-center justify-center w-[120vw]">
+    <div className=" min-h-screen flex items-center justify-center">
       <div className="overflow-scroll whitespace-nowrap break-keep max-w-sm bg-slate-300 snap-mandatory snap-x scrollbar-hide " onScroll={(e) => {}} ref={ref}>
         {/* <div style={{ width: `${spacerWidth}px` }} className={`flex-shrink-0`}></div> */}
         {options.map((char, i) => (
@@ -65,16 +65,22 @@ export function Option({
   const ITEM_MARGIN = 12 // harcoded because "mx-3"
   const spacerWidth = useMemo(() => (containerWidth / 2) + ITEM_WIDTH + (ITEM_MARGIN/2), [containerWidth])
 
-  const itemRef = useRef<HTMLButtonElement>(null)
+  const itemRef = useRef<HTMLDivElement>(null)
   const { scrollXProgress } = useScroll({
     container: containerRef,
     target: itemRef,
     axis: "x",
-    offset: ['0 0.5', '0 0', '-1 0.5']
+    offset: ['center start', 'center end']
+    // offset: ['0 0.5', '-1 0.5']
     // offset: [`0px ${spacerWidth}px`, `52px ${spacerWidth}px`], // blank of the target meets the blank of the container
   })
-
-  // const scale = useTransform(scrollXProgress, [1, 0.5, 0], [1, 1.25, 1])
+  const [content1, setContent1] = useState(content)
+  useMotionValueEvent(scrollXProgress, "change", (latest) => {
+    console.log(index, latest.toFixed(2))
+    
+    setContent1(latest.toFixed(2))
+  })
+    // const scale = useTransform(scrollXProgress, [1, 0.5, 0], [1, 1.25, 1])
 
   // const { scrollX } = useScroll({
   //   container: containerRef,
@@ -83,14 +89,15 @@ export function Option({
   // })
 
   return (
-    <motion.button
+    <motion.div
       onClick={() => setSelected(index)}
-      className={`flex-shrink-0 m-2 mx-3 bg-green-300 h-10 w-10 justify-center items-center rounded-full ${
+      className={`flex-shrink-0 inline-block m-2 mx-3 bg-green-300 h-10 w-10 justify-center items-center rounded-full ${
         selected == index ? "bg-blue-300" : ""
       }`}
       ref={itemRef}
-      style={{ scale: scrollXProgress }}>
-      {content}
-    </motion.button>
+      // style={{ scale: scrollXProgress }}
+      >
+      {content1}
+    </motion.div>
   )
 }
